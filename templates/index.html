@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motion Detection</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        #imageOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+        }
+        #imageOverlay img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            overflow: hidden;
+        }
+        #videoContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: none;
+        }
+        #video {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="imageOverlay">
+  <img src="https://img.freepik.com/vetores-gratis/fundo-de-gradiente-de-linhas-azuis-dinamicas_23-2148995756.jpg" alt="Image Overlay">
+</div>
+<div id="videoContainer">
+  <video id="video" autoplay></video>
+</div>
+
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+<script>
+    const videoContainer = document.getElementById('videoContainer');
+    const video = document.getElementById('video');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const socket = io();
+    let sessionId = '';
+    let prevImageData;
+    let isVideoVisible = false;
+    let lastMovementTime = Date.now();
+    const detectInterval = 1000;
+    const threshold = 1000000;
+
+    function generateSessionId() {
+        return 'session-' + Math.random().toString(36).substr(2, 16);
+    }
+
+    function setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = "expires=" + date.toUTCString();
+        document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
+
+    function getCookie(name) {
+        const cookieArr = document.cookie.split("; ");
+        for (let i = 0; i < cookieArr.length; i++) {
+            const cookiePair = cookieArr[i].split("=");
+            if (name === cookiePair[0]) {
+                return cookiePair[1];
+            }
+        }
+        return null;
+    }
+
+    function initSession() {
+        let existingSessionId = getCookie('sessionId');
+        if (!existingSessionId) {
+            existingSessionId = generateSessionId();
+            setCookie('sessionId', existingSessionId, 3650);
+        }
+        sessionId = existingSessionId;
+        console.log("Session ID: ", sessionId);
+    }
+
+    function startVideo() {
+        if (!sessionId) {
+            alert('Session ID not found.');
+            return;
+        }
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    canvas.width = video.videoWidth / 2;
+                    canvas.height = video.videoHeight / 2;
+                    setInterval(detectMotion, detectInterval);
+                };
+            })
+            .catch(error => {
+                console.error('Error accessing the webcam:', error);
+            });
+    }
+
+    function detectMotion() {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        if (prevImageData) {
+            const diff = compareImageData(prevImageData, imageData);
+            if (diff > threshold) {
+                if (!isVideoVisible) {
+                    showVideo();
+                }
+                sendFrameToServer();
+                lastMovementTime = Date.now();
+            } 
+        }
+
+        if (Date.now() - lastMovementTime > 10000) {
+            if (isVideoVisible) {
+                hideVideo();
+            }
+        }
+
+        prevImageData = imageData;
+    }
+
+    function compareImageData(data1, data2) {
+        const length = data1.data.length;
+        let diff = 0;
+
+        for (let i = 0; i < length; i += 4) {
+            const rDiff = Math.abs(data1.data[i] - data2.data[i]);
+            const gDiff = Math.abs(data1.data[i + 1] - data2.data[i + 1]);
+            const bDiff = Math.abs(data1.data[i + 2] - data2.data[i + 2]);
+            diff += rDiff + gDiff + bDiff;
+        }
+
+        return diff;
+    }
+
+    function sendFrameToServer() {
+        const imageDataUrl = canvas.toDataURL('image/jpeg', 0.5);
+        socket.emit('frame', { image: imageDataUrl, session_id: sessionId });
+    }
+
+    function showVideo() {
+        videoContainer.style.display = 'block';
+        isVideoVisible = true;
+    }
+
+    function hideVideo() {
+        videoContainer.style.display = 'none';
+        isVideoVisible = false;
+    }
+
+    window.onload = () => {
+        initSession();
+        startVideo();
+    };
+
+    socket.on('result', (data) => {
+        if (data.message === 'Match found') {
+            window.location.href = 'aprovado';
+        } else {
+            console.log('No match found');
+        }
+    });
+
+    socket.on('error', (data) => {
+        console.error('Error:', data.error);
+    });
+</script>
+</body>
+</html>

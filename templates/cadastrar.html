@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuário</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <nav class="sidebar">
+        <h2 class="titulo">Menu</h2>
+        <ul>
+            <li><a href="{{ url_for('cadastrar') }}">Cadastrar</a></li>
+            <li><a href="{{ url_for('usuarios') }}">Usuários</a></li>
+            <li><a href="{{ url_for('painel') }}">Painel</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section id="container">
+            <h2 class="titulo">Cadastro de Usuário</h2>
+            <div class="container">
+                <div class="user-image" id="image-container">
+                    <img src="{{ url_for('static', filename='user-placeholder.png') }}" alt="Sem Foto" id="user-preview">
+                </div>
+                <form class="user-form" method="POST" enctype="multipart/form-data">
+                    <label class="file-upload btn">Inserir Foto
+                        <input type="file" class="file-input" id="foto" name="foto" accept=".png, .jpg, .jpeg" required>
+                    </label>
+                
+                    <label for="nome" class="input-text">Nome:
+                        <input type="text" id="nome" name="nome" placeholder="Nome do usuário" required>
+                    </label>
+                
+                    <label for="data" class="input-text">Data de Nascimento:
+                        <input type="date" id="data" name="data" required>
+                    </label>
+                
+                    <label for="cpf" class="input-text">CPF:
+                        <input type="text" id="cpf" name="cpf" placeholder="CPF do usuário" required>
+                    </label>
+                
+                    <label for="email" class="input-text">Email:
+                        <input type="email" id="email" name="email" placeholder="Email do usuário" required>
+                    </label>
+                
+                    <button type="submit" class="btn">Cadastrar</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.getElementById('foto').addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('user-preview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
