@@ -16,6 +16,7 @@
         </ul>
     </nav>
     <main>
+        {% block content %}
         <section id="container">
             <h2 class="titulo">Cadastro de Usuário</h2>
             <div class="container">
@@ -47,6 +48,7 @@
                 </form>
             </div>
         </section>
+        {% endblock %}
     </main>
 
     <script>

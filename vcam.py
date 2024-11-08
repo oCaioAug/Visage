@@ -35,6 +35,24 @@ class Acesso(db.Model):
 with app.app_context():
     db.create_all()
 
+def validar_cpf(cpf):
+    cpf = re.sub(r'[^0-9]', '', cpf)
+    if len(cpf) != 11 or cpf == cpf[0] * 11:
+        return False
+    soma = sum(int(cpf[i]) * (10 - i) for i in range(9))
+    resto = (soma * 10 % 11) % 10
+    if resto != int(cpf[9]):
+        return False
+    soma = sum(int(cpf[i]) * (11 - i) for i in range(10))
+        resto = (soma * 10 % 11) % 10
+        if resto != int(cpf[10]):
+            return False
+    return True
+
+@app.route('/')
+def home():
+    return "<h1>Bem-vindo ao meu site Flask!</h1>"
+
 @app.route('/cadastrar', methods=['GET', 'POST'])
 def cadastrar():
     if request.method == 'POST':
