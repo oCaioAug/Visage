@@ -117,4 +117,4 @@ def painel():
 
 if __name__ == '__main__':
     os.makedirs('static/uploads', exist_ok=True)
-    app.run(debug=True, port=8889)
+    app.run(debug=True, port=80)
