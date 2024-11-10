@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -15,7 +15,10 @@
             <li><a href="{{ url_for('painel') }}">Painel</a></li>
         </ul>
     </nav>
-    <main>
+    <main> -->
+        {% extends "base.html" %}
+        {% block title %}Cadastrar | Visage{% endblock %}
+        
         {% block content %}
         <section id="container">
             <h2 class="titulo">Cadastro de Usuário</h2>
@@ -48,8 +51,7 @@
                 </form>
             </div>
         </section>
-        {% endblock %}
-    </main>
+    <!-- </main> -->
 
     <script>
         document.getElementById('foto').addEventListener('change', function(event) {
@@ -63,5 +65,7 @@
             }
         });
     </script>
+    {% endblock %}
+<!-- 
 </body>
-</html>
+</html> -->
