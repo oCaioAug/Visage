@@ -23,6 +23,22 @@ class Usuario(db.Model):
 with app.app_context():
     db.create_all()
 
+class Funcionario(Usuario):
+    def __init__(self, nome, data_nascimento, cpf, email, foto, embedding, status):
+        super().__init__(nome=nome, data_nascimento=data_nascimento, cpf=cpf, email=email, foto=foto, embedding=embedding, status=status)
+
+
+    def fulaon():
+        return True
+
+class Admin(Funcionario):
+    def __init__(self, nome, data_nascimento, cpf, email, foto, embedding, status):
+        super().__init__(nome=nome, data_nascimento=data_nascimento, cpf=cpf, email=email, foto=foto, embedding=embedding, status=status)
+
+    def tal():
+        return True
+
+
 class Acesso(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
@@ -51,7 +67,7 @@ with app.app_context():
 
 @app.route('/')
 def home():
-    return "<h1>Bem-vindo ao meu site Flask!</h1>"
+    return render_template('base.html')
 
 @app.route('/cadastrar', methods=['GET', 'POST'])
 def cadastrar():
@@ -114,6 +130,28 @@ def usuario_perfil(id):
 def painel():
     acessos = Acesso.query.order_by(Acesso.data, Acesso.hora).all()
     return render_template('painel.html', acessos=acessos)
+
+@app.route('/funcionarios')
+def funcionarios():
+    funcionarios = [
+        Funcionario("João Silva", "1990-01-01", "123.456.789-00", "joao.silva@example.com", None, None, "liberado"),
+        Funcionario("Maria Oliveira", "1985-05-15", "987.654.321-00", "maria.oliveira@example.com", None, None, "liberado"),
+        Funcionario("Carlos Santos", "1992-03-20", "456.789.123-00", "carlos.santos@example.com", None, None, "liberado")
+    ]
+    return render_template('funcionarios.html', funcionarios=funcionarios)
+
+@app.route('/administradores')
+def admins():
+    admins = [
+        Admin("João Silva", "1990-01-01", "123.456.789-00", "joao.silva@example.com", None, None, "liberado"),
+        Admin("Maria Oliveira", "1985-05-15", "987.654.321-00", "maria.oliveira@example.com", None, None, "liberado"),
+        Admin("Carlos Santos", "1992-03-20", "456.789.123-00", "carlos.santos@example.com", None, None, "liberado"),
+    ]
+    return render_template('administradores.html', admins=admins)
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
 if __name__ == '__main__':
     os.makedirs('static/uploads', exist_ok=True)

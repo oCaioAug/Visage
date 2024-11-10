@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Administradores | Visage{% endblock %}
+
+{% block content %}
+    <section id="container">
+        <h1 class="titulo">Administradores</h1>
+
+        <div class="usuarios">
+            {% for admin in admins %}
+                <div class="container card">
+                    <div class="user-image">
+                        {% if admin.foto_base64 %}
+                            <img src="data:image/jpeg;base64,{{ admin.foto_base64 }}" alt="Imagem do Administrador">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='default.jpg') }}" alt="Imagem do Administrador">
+                        {% endif %}
+                    </div>
+
+                    <!-- Display status dynamically -->
+                    <label class="tag" id="status-text">
+                        {% if admin.status == 'liberado' %}
+                            Liberado
+                        {% else %}
+                            Bloqueado
+                        {% endif %}
+                    </label>
+
+                    <a href="{{ url_for('usuario_perfil', id=1) }}" class="btn">Detalhes</a>
+                </div>
+            {% else %}
+                <p>Nenhum funcionário cadastrado.</p>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock content %}
+

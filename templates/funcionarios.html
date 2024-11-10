@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Funcionários | Visage{% endblock %}
+
+{% block content %}
+    <section id="container">
+        <h1 class="titulo">Funcionários</h1>
+
+        <div class="usuarios">
+            {% for funcionario in funcionarios %}
+                <div class="container card">
+                    <div class="user-image">
+                        {% if funcionario.foto_base64 %}
+                            <img src="data:image/jpeg;base64,{{ funcionario.foto_base64 }}" alt="Imagem do Funcionário">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='default.jpg') }}" alt="Imagem do Funcionário">
+                        {% endif %}
+                    </div>
+
+                    <!-- Display status dynamically -->
+                    <label class="tag" id="status-text">
+                        {% if funcionario.status == 'liberado' %}
+                            Liberado
+                        {% else %}
+                            Bloqueado
+                        {% endif %}
+                    </label>
+
+                    <a href="{{ url_for('usuario_perfil', id=1) }}" class="btn">Detalhes</a>
+                </div>
+            {% else %}
+                <p>Nenhum funcionário cadastrado.</p>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock content %}
+
