@@ -1,0 +1,31 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Visage{% endblock %}</title>
+    <!-- Inclua aqui seus arquivos CSS e JS comuns -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+</head>
+<body>
+    <header>
+        <nav class="sidebar">
+            <h2 class="titulo">Menu</h2>
+            <ul>
+                <li><a href="{{ url_for('cadastrar') }}">Cadastrar</a></li>
+                <li><a href="{{ url_for('usuarios') }}">Usuários</a></li>
+                <li><a href="{{ url_for('funcionarios') }}">Funcionários</a></li>
+                <li><a href="{{ url_for('admins') }}">Administradores</a></li>
+                <li><a href="{{ url_for('painel') }}">Painel</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        <!-- Conteúdo específico de cada página será inserido aqui -->
+        {% endblock %}
+    </main>
+</body>
+</html>
