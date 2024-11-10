@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tela de Login</title>
+    <link rel="stylesheet" href="stylesLogin.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesLogin.css') }}">
+</head>
+<body>
+    <section>
+        <img src="{{ url_for('static', filename='uploads/Logo.png') }}" alt="Logotipo: Visage" class="logo">
+        <div class="container">
+            <form class="login-form">
+                <input type="text" placeholder="Nome de Usuário" required>
+                <input type="password" placeholder="Senha" required>
+                <div class="acoes">
+                    <button type="submit">Entrar</button>
+                    <a href="#">Esqueceu a senha?</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+</html>
+
+
