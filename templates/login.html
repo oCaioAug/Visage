@@ -11,11 +11,11 @@
     <section>
         <img src="{{ url_for('static', filename='uploads/Logo.png') }}" alt="Logotipo: Visage" class="logo">
         <div class="container">
-            <form class="login-form">
-                <input type="text" placeholder="Nome de Usuário" required>
-                <input type="password" placeholder="Senha" required>
+            <form class="login-form" method="POST" action="{{ url_for('index') }}">
+                <input type="text" name="username" placeholder="Nome de Usuário" required>
+                <input type="password" name="password" placeholder="Senha" required>
                 <div class="acoes">
-                    <button type="submit">Entrar</button>
+                    <button type="submit" value="Login">Entrar</button>
                     <a href="#">Esqueceu a senha?</a>
                 </div>
             </form>

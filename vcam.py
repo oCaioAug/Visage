@@ -65,9 +65,18 @@ with app.app_context():
 #             return False
 #     return True
 
-@app.route('/')
-def home():
-    return render_template('base.html')
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'GET':
+        return render_template('login.html')
+    elif request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        if username == 'caio' and password == '123':
+            return redirect('/cadastrar')
+        else:
+            return "HAHAHAHAHAH"
 
 @app.route('/cadastrar', methods=['GET', 'POST'])
 def cadastrar():
