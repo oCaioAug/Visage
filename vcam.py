@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 import os
 import base64
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'sua_chave_secreta_para_flash_messages'
@@ -64,6 +64,13 @@ with app.app_context():
 #         if resto != int(cpf[10]):
 #             return False
 #     return True
+
+@app.route('/set_data')
+def set_data():
+    session['name'] = 'Mike'
+    session['other'] = 'Xique-Xique BA'
+
+    return render_template('aaa.html', message='Session stored succesfully')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -161,6 +168,10 @@ def admins():
 @app.route('/login')
 def login():
     return render_template('login.html')
+
+@app.route('/bio')
+def bio():
+    return render_template('index.html')
 
 if __name__ == '__main__':
     os.makedirs('static/uploads', exist_ok=True)

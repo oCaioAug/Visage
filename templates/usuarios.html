@@ -12,11 +12,15 @@
             {% for usuario in usuarios %}
                 <div class="container card">
                     <div class="user-image">
-                        {% if usuario.foto_base64 %}
-                            <img src="data:image/jpeg;base64,{{ usuario.foto_base64 }}" alt="Imagem do Usuário">
+                        {% if usuario.base64_image %}
+                            <img src="data:image/jpeg;base64,{{ usuario.base64_image }}" alt="Imagem do Usuário">
                         {% else %}
                             <img src="{{ url_for('static', filename='default.jpg') }}" alt="Imagem do Usuário">
                         {% endif %}
+                    </div>
+
+                    <div class="">
+                        <p>{{ usuario.nome }} </p>
                     </div>
 
                     <!-- Display status dynamically -->
