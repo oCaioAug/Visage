@@ -1,3 +1,47 @@
-/instance/
-/.venv/
-instance/database.db
+# Ambiente virtual
+venv/
+.env/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Configurações e credenciais
+*.env
+*.DS_Store
+*.pyc
+__pycache__/
+instance/
+
+# Arquivos do editor/IDE
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Logs e arquivos temporários
+*.log
+*.pot
+*.py[cod]
+*.sqlite3
+*.pyo
+*.swo
+*.swp
+
+# Arquivos de migração do Alembic
+migrations/
+migrations/versions/
+
+# Banco de dados local
+*.sqlite3
+*.db
+
+# Outras pastas temporárias
+.cache/
+.coverage
+.tox/
+dist/
+build/
+docs/_build/
+node_modules/
