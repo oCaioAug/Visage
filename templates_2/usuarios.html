@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Usuários | Visage{% endblock %}
+
+{% block content %}
+    <section id="container">
+        <div class="aaa" style="display: flex;justify-content: space-between;background-color: green;">
+            <h1 class="titulo">Usuários</h1>
+            <h1 class="titulo">Cadastrar</h1>
+        </div>
+
+        <div class="usuarios">
+            {% for usuario in usuarios %}
+                <div class="container card">
+                    <div class="user-image">
+                        {% if usuario.base64_image %}
+                            <img src="data:image/jpeg;base64,{{ usuario.base64_image }}" alt="Imagem do Usuário">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='default.jpg') }}" alt="Imagem do Usuário">
+                        {% endif %}
+                    </div>
+
+                    <div class="">
+                        <p>{{ usuario.nome }} </p>
+                    </div>
+
+                    <!-- Display status dynamically -->
+                    <label class="tag" id="status-text">
+                        {% if usuario.status == 'liberado' %}
+                            Liberado
+                        {% else %}
+                            Bloqueado
+                        {% endif %}
+                    </label>
+
+                    <a href="{{ url_for('usuario_perfil', id=usuario.id) }}" class="btn">Detalhes</a>
+                </div>
+            {% else %}
+                <p>Nenhum usuário cadastrado.</p>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock content %}
+

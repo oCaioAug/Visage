@@ -35,7 +35,7 @@ migrations/versions/
 
 # Banco de dados local
 *.sqlite3
-
+*.Identifier
 
 # Outras pastas temporárias
 .cache/

@@ -1,58 +1,51 @@
-{% extends "base.html" %}
-{% block title %}Cadastrar | Visage{% endblock %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs de Acesso</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <nav class="sidebar">
+        <h1 class="titulo">Menu</h1>
+        <ul>
+            <li><a href="{{ url_for('cadastrar') }}">Cadastrar</a></li>
+            <li><a href="{{ url_for('usuarios') }}">Usuários</a></li>
+            <li><a href="{{ url_for('painel') }}">Painel</a></li>
+            <li><a href="{{ url_for('logout') }}">Sair</a><li>
+        </ul>
+    </nav>
+    <main>
+        <h1 class="titulo">Logs de Acesso</h1>
 
-{% block content %}
-    <h1 class="titulo">Painel</h1>
+        <section class="container">
+            <div style="display: flex; justify-content: space-between;">
+                <h2>Todos os Logs</h2>
+                <button class="btn" onclick="window.location.href='{{ url_for('exportar_logs') }}'">Exportar</button>
+            </div>
 
-    <section class="container">
-        <div style="display: flex; justify-content: space-between;">
-            <h2>Todos os Acessos</h2>
-            <button class="btn">Exportar</button>
-        </div>
-        <div class="filtros">
-            <!-- Filtros de busca, aqui apenas o layout básico -->
-            <label for="nome" class="input-text">
-                <input type="text" id="nome" name="nome" placeholder="Nome do Usuário">
-            </label>
-            <select>
-                <option value="todos">✨ Todos</option>
-                <option value="entrada">🟢 Entrada</option>
-                <option value="saida">🔴 Saída</option>
-            </select>
-            <label class="input-text">
-                <input type="text" id="semana" name="semana" placeholder="Dia da Semana">
-            </label>
-            <label class="input-text">
-                <input type="date" id="data" name="data">
-                até
-                <input type="date" id="data" name="data">
-            </label>
-            <label class="input-text">
-                <input type="time" id="time" name="time">
-                até
-                <input type="time" id="time" name="time">
-            </label>
-        </div>
-
-        <table>
-            <thead>
-                <th>Usuário</th>
-                <th>Acesso</th>
-                <th>Dia da Semana</th>
-                <th>Data</th>
-                <th>Horário</th>
-            </thead>
-            <tbody>
-                {% for acesso in acessos %}
-                <tr>
-                    <td>{{ acesso.usuario.nome }}</td>
-                    <td>{{ '🟢 Entrada' if acesso.tipo == 'entrada' else '🔴 Saída' }}</td>
-                    <td>{{ acesso.dia_semana }}</td>
-                    <td>{{ acesso.data }}</td>
-                    <td>{{ acesso.hora }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
-{% endblock %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in painel %}
+                    <tr>
+                        <td>{{ log.usuario.nome }}</td>
+                        <td>{{ '🟢 Liberado' if log.status == 'liberado' else '🔴 Bloqueado' }}</td>
+                        <td>{{ log.timestamp.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ log.timestamp.strftime('%H:%M:%S') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

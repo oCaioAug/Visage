@@ -1,110 +1,102 @@
-{% extends "base.html" %}
-{% block title %}Perfil Usuário | Visage{% endblock %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do Usuário</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <nav class="sidebar">
+        <h1 class="titulo">Menu</h1>
+        <ul>
+            <li><a href="{{ url_for('cadastrar') }}">Cadastrar</a></li>
+            <li><a href="{{ url_for('usuarios') }}">Usuários</a></li>
+            <li><a href="{{ url_for('painel') }}">Painel</a></li>
+            <li><a href="{{ url_for('logout') }}">Sair</a></li>
+        </ul>
+    </nav>
 
-{% block content %}
-    <section id="container">
-        <h1 class="titulo">Perfil do Usuário</h1>
-        <div class="container">
-            <div class="user-perfil">
-                <div class="container">
-                    <div class="user-image">
-                        {% if usuario.foto_base64 %}
-                            <img src="data:image/jpeg;base64,{{ usuario.foto_base64 }}" alt="Imagem do Usuário">
-                        {% else %}
-                            <img src="{{ url_for('static', filename='default.jpg') }}" alt="Imagem do Usuário">
-                        {% endif %}
+    <main>
+        <section id="container">
+            <h1 class="titulo">Perfil do Usuário</h1>
+            <div class="container">
+                <div class="user-perfil">
+                    <div class="container">
+                        <div class="user-image">
+                            {% if usuario.foto_base64 %}
+                                <img src="data:image/jpeg;base64,{{ usuario.foto_base64 }}" alt="Imagem do Usuário">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='uploads/user-placeholder.jpg') }}" alt="Imagem do Usuário">
+                            {% endif %}
+                        </div>
+                        <label class="tag" id="status-text">{{ 'Liberado' if usuario.status == 'liberado' else 'Bloqueado' }}</label>
                     </div>
-                    <label class="tag" id="status-text">{{ 'Liberado' if usuario.status == 'liberado' else 'Bloqueado' }}</label>
-                </div>
 
-                <div class="container" id="info">
-                    <h2>Informações</h2>
-                    <label>Nome: <p>{{ usuario.nome }}</p></label>
-                    <label>Email: <p>{{ usuario.email }}</p></label>
-                    <label>Data Nasc: <p>{{ usuario.data_nascimento }}</p></label>
-                    <label>CPF: <p>{{ usuario.cpf }}</p></label>
-                </div>
-
-                <div class="container" id="acoes">
-                    <div>
-                        <span>Status de Acesso</span>
-                        <label class="check-acesso">
-                            <input type="checkbox" id="acesso" name="status" value="liberado" 
-                                    {{ 'checked' if usuario.status == 'liberado' else '' }}>
-                        </label>
+                    <div class="container" id="info">
+                        <h2>Informações</h2>
+                        <label>Nome: <p>{{ usuario.nome }}</p></label>
+                        <label>Email: <p>{{ usuario.email }}</p></label>
+                        <label>Data Nasc: <p>{{ usuario.data_nascimento }}</p></label>
+                        <label>CPF: <p>{{ usuario.cpf }}</p></label>
                     </div>
 
-                    <div id="acoes">
-                        <button class="btn">Editar</button>
-                        <button class="btn">Exportar</button>
+                    <div class="container" id="acoes">
+                        <div>
+                            <span>Status de Acesso</span>
+                            <label class="check-acesso">
+                                <input type="checkbox" id="acesso" name="status" value="liberado" 
+                                       {{ 'checked' if usuario.status == 'liberado' else '' }}>
+                            </label>
+                        </div>
+
+                        <div id="acoes">
+                            <a href="{{ url_for('editar_usuario', id=usuario.id) }}" class="btn">Editar</a>
+                            <a href="{{ url_for('exportar_logs', id=usuario.id) }}" class="btn">Exportar</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="container">
-        <h2>Acessos do Usuário</h2>
-        <div class="filtros">
-            <select>
-                <option value="todos">✨ Todos</option>
-                <option value="entrada">🟢 Entrada</option>
-                <option value="saida">🔴 Saída</option>
-            </select>
-            <label for="nome" class="input-text">
-                <input type="text" id="nome" name="nome" placeholder="Dia da Semana">
-            </label>
-            <label for="data" class="input-text">
-                <input type="date" id="data" name="data">
-                até
-                <input type="date" id="data" name="data">
-            </label>
-            <label for="data" class="input-text">
-                <input type="time" id="time" name="time">
-                até
-                <input type="time" id="time" name="time">
-            </label>
-        </div>
+        <section class="container">
+            <h2>Acessos do Usuário</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Acesso</th>
+                        <th>Dia da Semana</th>
+                        <th>Data</th>
+                        <th>Horário</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ '🟢 Liberado' if log.status == 'liberado' else '🔴 Bloqueado' }}</td>
+                        <td>{{ log.timestamp.strftime('%A') }}</td>
+                        <td>{{ log.timestamp.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ log.timestamp.strftime('%H:%M:%S') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">Nenhum log encontrado para este usuário.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
 
-        <table>
-            <thead>
-                <th>Acesso</th>
-                <th>Dia da Semana</th>
-                <th>Data</th>
-                <th>Horário</th>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>🟢 Entrada</td>
-                    <td>Quarta</td>
-                    <td>69/69/69</td>
-                    <td>69:69</td>
-                </tr>
-                <tr>
-                    <td>🔴 Saída</td>
-                    <td>Segunda</td>
-                    <td>96/96/96</td>
-                    <td>96:96</td>
-                </tr>
-                <tr>
-                    <td>🟢 Entrada</td>
-                    <td>Segunda</td>
-                    <td>69/69/69</td>
-                    <td>69:69</td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
-
+    </main>
 
     <script>
         document.getElementById("acesso").addEventListener("change", function() {
             var statusText = document.getElementById("status-text");
-            var status = this.checked ? 'liberado' : 'bloqueado';
+            var status = this.checked ? 'liberado' : 'bloqueado'; 
 
-            statusText.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            statusText.textContent = status.charAt(0).toUpperCase() + status.slice(1);  
 
-            var usuarioId = {{ usuario.id }};
+            var usuarioId = {{ usuario.id }};  
             var formData = new FormData();
             formData.append('status', status);
             formData.append('usuario_id', usuarioId);
@@ -120,5 +112,7 @@
                 }
             });
         });
+
     </script>
-{% endblock %}
+</body>
+</html>

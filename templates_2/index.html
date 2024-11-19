@@ -3,45 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visage Detection</title>
+    <title>Motion Detection</title>
     <style>
-        /* Configurações gerais */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
             overflow: hidden;
         }
-
-        /* Estilo do background para cobrir toda a tela sem ocultar */
         #imageOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: -1; /* Mantém o fundo atrás de tudo */
+            z-index: -1;
             overflow: hidden;
         }
-
         #imageOverlay img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            overflow: hidden; /* Permite que o conteúdo transborde sem ser oculto */
+            overflow: hidden;
         }
-
-        /* Vídeo sobreposto ao fundo */
         #videoContainer {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1; /* Coloca o vídeo sobre o background */
+            z-index: 1;
             display: none;
         }
-
         #video {
             width: 100%;
             height: 100%;
@@ -69,7 +62,6 @@
     let lastMovementTime = Date.now();
     const detectInterval = 1000;
     const threshold = 1000000;
-    let isWaiting = false; 
 
     function generateSessionId() {
         return 'session-' + Math.random().toString(36).substr(2, 16);
@@ -97,10 +89,10 @@
         let existingSessionId = getCookie('sessionId');
         if (!existingSessionId) {
             existingSessionId = generateSessionId();
-            setCookie('sessionId', existingSessionId, 3650); 
+            setCookie('sessionId', existingSessionId, 3650);
         }
         sessionId = existingSessionId;
-        console.log("Session ID: ", sessionId); 
+        console.log("Session ID: ", sessionId);
     }
 
     function startVideo() {
@@ -129,16 +121,16 @@
         if (prevImageData) {
             const diff = compareImageData(prevImageData, imageData);
             if (diff > threshold) {
-                if (!isVideoVisible && !isWaiting) { 
+                if (!isVideoVisible) {
                     showVideo();
                 }
                 sendFrameToServer();
                 lastMovementTime = Date.now();
-            }
+            } 
         }
 
         if (Date.now() - lastMovementTime > 10000) {
-            if (isVideoVisible && !isWaiting) { 
+            if (isVideoVisible) {
                 hideVideo();
             }
         }
@@ -182,80 +174,15 @@
 
     socket.on('result', (data) => {
         if (data.message === 'Match found') {
-            showApprovalScreen(data.name); 
-            hideVideo();
-        } else if (data.message === 'Match bloqueado') {
-            showBlockedScreen(data.name); 
-            hideVideo();
+            window.location.href = 'aprovado';
         } else {
             console.log('No match found');
         }
     });
 
-    function showApprovalScreen(name) {
-        const approvalDiv = document.createElement('div');
-        approvalDiv.style.display = 'flex';
-        approvalDiv.style.justifyContent = 'center';
-        approvalDiv.style.alignItems = 'center';
-        approvalDiv.style.height = '100vh';
-        approvalDiv.style.backgroundColor = 'green';
-        approvalDiv.style.color = 'white';
-        approvalDiv.style.fontSize = '2em';
-        approvalDiv.style.textAlign = 'center';
-        approvalDiv.style.flexDirection = 'column';
-
-        approvalDiv.innerHTML = `
-            <div>✅</div>
-            <div style="margin-top: 20px;">Aprovado</div>
-            <div style="margin-top: 10px;">Bem-vindo, ${name}!</div>
-        `;
-
-        document.body.appendChild(approvalDiv);
-
-        isWaiting = true; 
-        waitFor(3000).then(() => {
-            approvalDiv.remove();
-            hideVideo();
-            isWaiting = false; 
-        });
-    }
-
-    function showBlockedScreen(name) {
-        const blockedDiv = document.createElement('div');
-        blockedDiv.style.display = 'flex';
-        blockedDiv.style.justifyContent = 'center';
-        blockedDiv.style.alignItems = 'center';
-        blockedDiv.style.height = '100vh';
-        blockedDiv.style.backgroundColor = 'red';
-        blockedDiv.style.color = 'white';
-        blockedDiv.style.fontSize = '2em';
-        blockedDiv.style.textAlign = 'center';
-        blockedDiv.style.flexDirection = 'column';
-
-        blockedDiv.innerHTML = `
-            <div>❌</div>
-            <div style="margin-top: 20px;">Bloqueado</div>
-            <div style="margin-top: 10px;">Desculpe, ${name}.</div>
-        `;
-
-        document.body.appendChild(blockedDiv);
-
-        isWaiting = true; 
-        waitFor(3000).then(() => {
-            blockedDiv.remove();
-            hideVideo();
-            isWaiting = false; 
-        });
-    }
-
     socket.on('error', (data) => {
         console.error('Error:', data.error);
     });
-
-    function waitFor(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
 </script>
-
 </body>
 </html>
