@@ -457,5 +457,5 @@ def index():
             return "Usuário ou senha inválidos", 401
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8890, debug=True)
+    app.run(debug=True, port=8890,host='0.0.0.0')
     # ssl_context=('cert.pem', 'key.pem')
